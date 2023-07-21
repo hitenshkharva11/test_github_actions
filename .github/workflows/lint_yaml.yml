@@ -1,63 +1,52 @@
-  name: Yaml Lint
-  on:
-    - workflow_call
-  jobs:
-      lint:
-        runs-on: ubuntu-latest
-        steps:
-          - name: Checkout repository
-            uses: actions/checkout@v3
+name: Yaml Lint
 
-          - name: Install Python
-            uses: actions/setup-python@v2
-            with:
-              python-version: 3.x
+on:
+  - workflow_call
 
-          - name: Install dependencies
-            run: |
-              python -m pip install --upgrade pip
-              pip install yamllint
-            
-          - name: Get changed files
-            id: get_file_changes
-            uses: tj-actions/changed-files@v37
-            with:
-              separator: ' '
-          - name: Get new and changed .yaml files in main directory to lint
-            id: get_files_to_lint
-            shell: bash -l {0}
-            run: |
-              # Set the command in the $() brackets as an output to use in later steps
-              echo "lintees=$(
-              # Issue where grep regular expressions don't work as expected on the
-              # Github Actions shell, check dbt/models/ folder
-              echo \
-              $(echo ${{ steps.get_file_changes.outputs.files_modified }} |
-              tr -s ' ' '\n' |
-              grep -E '^models.*[.]sql$' |
-              tr -s '\n' ' ') \
-              $(echo ${{ steps.get_file_changes.outputs.files_added }} |
-              tr -s ' ' '\n' |
-              grep -E '^models.*[.]sql$' |
-              tr -s '\n' ' ')
-              )" >> $GITHUB_OUTPUT
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-          # - name: Lint YAML files
-          #   if: steps.get_files_to_lint.outputs.lintees != ''
-          #   id: lint
-          #   run: |
-          #     echo ${{ steps.get_files_to_lint.outputs.lintees }} 
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
 
-          # - name: Annotate lint errors
-          #   if: always()
-          #   uses: ibiqlik/action-yamllint@v1
-        #   with:
-        #     token: ${{ secrets.GITHUB_TOKEN }}
-        #     lint_output: lint_output.json
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install yamllint
 
-        # - name: Annotate
-        #   uses: yuzutech/annotations-action@v0.3.0
-        #   with:
-        #     repo-token: "${{ secrets.GITHUB_TOKEN }}"
-        #     title: "Annotate SQLFluff Lint Errors"
-        #     input: "./lint_output.json"
+      - name: Get changed files
+        id: get_file_changes
+        uses: tj-actions/changed-files@v37
+        with:
+          separator: ' '
+
+      - name: Get new and changed .yaml files in main directory to lint
+        id: get_files_to_lint
+        shell: bash -l {0}
+        run: |
+          # Set the command in the $() brackets as an output to use in later steps
+          echo "lintees=$(
+          # Issue where grep regular expressions don't work as expected on the
+          # Github Actions shell, check dbt/models/ folder
+          echo \
+          $(echo ${{ steps.get_file_changes.outputs.modified_files }} |
+          tr -s ' ' '\n' |
+          grep -E "\.ya?ml$" |
+          tr -s '\n' ' ') \
+          $(echo ${{ steps.get_file_changes.outputs.added_files }} |
+          tr -s ' ' '\n' |
+          grep -E "\.ya?ml$" |
+          tr -s '\n' ' ')
+          )" >> $GITHUB_OUTPUT
+
+      - name: Lint YAML files
+        if: steps.get_files_to_lint.outputs.lintees != ''
+        id: lint
+        run: |
+          yamllint -c .github/workflows/.yamllint.yml ${{ steps.get_files_to_lint.outputs.lintees }}
