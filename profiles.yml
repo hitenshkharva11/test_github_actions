@@ -1,0 +1,17 @@
+config:
+    send_anonymous_usage_stats: False
+    use_colors: True
+
+default:
+  target: ci
+  outputs:
+    ci:
+      type: snowflake
+      account: "kx66005"
+      user: "HKHARVA"
+      password: "QwPoZxMn@2"
+      role: "ENT_DEVELOPER_ROLE"
+      database: "DEV_DWH"
+      warehouse: "COMPUTE_WH"
+      schema: "AV_"
+      threads: 1

@@ -1,0 +1,4 @@
+dbt-snowflake==1.5.1
+dbt-core
+requests
+looker-sdk
