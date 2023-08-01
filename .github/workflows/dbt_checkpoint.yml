@@ -1,0 +1,82 @@
+name: dbt_checkpoint
+
+on:
+  pull_request:
+    branches:
+      - development
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+
+      # Doesnt need dbt, uses artifacts from dbt cloud run
+
+      - name: Install pre-commit
+        shell: bash -l {0}
+        run: |
+          python -m pip install pre-commit
+
+      # - name: Get PR number
+      #   id: findPr
+      #   uses: kamatama41/get-pr-number-action@v0
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Show the PR number   
+      #   run: echo "PR number is ${{ steps.findPr.outputs.number }}"
+
+      # - name: get-manifest
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: pr_${{ steps.findPr.outputs.number }}_manifest
+      #     path: target
+
+      # - name: get-catalog
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: pr_${{ steps.findPr.outputs.number }}_catalog
+      #     path: target
+      - name: Get changed files
+        id: get_file_changes
+        uses: tj-actions/changed-files@v37
+        with:
+          separator: ' '
+          
+    # Transforming the output of get_file_changes to a string we can use for our next step
+    # We want to take in account both new files and files that have been modified
+      - name: Get new and changed .sql files in /models to lint
+        id: get_files_to_lint
+        shell: bash -l {0}
+        run: |
+          # Set the command in the $() brackets as an output to use in later steps
+          echo "lintees=$(
+          # Issue where grep regular expressions don't work as expected on the
+          # Github Actions shell, check dbt/models/ folder
+          echo \
+          $(echo ${{ steps.get_file_changes.outputs.files_modified }} |
+          tr -s ' ' '\n' |
+          grep -E '^models.*' |
+          tr -s '\n' ' ') \
+          $(echo ${{ steps.get_file_changes.outputs.files_added }} |
+          tr -s ' ' '\n' |
+          grep -E '^models.*' |
+          tr -s '\n' ' ')
+          )" >> $GITHUB_OUTPUT
+
+      - name: Force pass because no files edited.
+        if: steps.get_files_to_lint.outputs.lintees == ''
+        shell: bash -l {0}
+        working-directory: data_warehouse
+        run: |
+          echo "::success file=app.js,line=1,col=1,endColumn=1::dbt-checkpoint disabled.  No files to check."
+          exit 0
+
+    # Finally run pre-commit
+      - name: Run pre-commit
+        if: steps.get_files_to_lint.outputs.lintees != ''
+        shell: bash -l {0}
+        run: |
+          pre-commit run --files ${{ steps.get_files_to_lint.outputs.lintees }}

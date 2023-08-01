@@ -1,0 +1,16 @@
+version: 2
+
+# Test models from the 3_marts directory
+models:
+  - name: test_checkpoint_3
+    description:  test checkpoint 3 - Check model yaml has all columns marts
+    columns:
+      - name: id
+        description: The unique identifier
+        tests:
+          - unique
+      # Missing 'name' column in the YAML file
+      - name: description
+        description: The description of the item
+        tests:
+          - not_null

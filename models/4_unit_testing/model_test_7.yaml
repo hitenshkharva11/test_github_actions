@@ -1,0 +1,17 @@
+version: 2
+sources:
+  - name: test_checkpoint_7
+    tables:
+      - name: model_test_7
+        description: The source table
+        columns:
+          - name: id
+            description: The unique identifier
+          - name: name
+            description: The name of the item
+          - name: description
+            description: The description of the item
+          - name: issue_test
+            description: issue date
+          - name: issue_t
+            description: issue date
