@@ -10,4 +10,3 @@ rules:
   truthy: 
     allowed-values: ["true", "false", "on"]
   
-  new-lines: disable

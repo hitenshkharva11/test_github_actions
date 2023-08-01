@@ -43,16 +43,15 @@ jobs:
         # Issue where grep regular expressions don't work as expected on the
         # Github Actions shell, check dbt/models/ folder
         echo \
-        $(echo ${{ steps.get_file_changes.outputs.files_modified }} |
+        $(echo ${{ steps.get_file_changes.outputs.modified_files }} |
         tr -s ' ' '\n' |
         grep -E '^models.*[.]sql$' |
         tr -s '\n' ' ') \
-        $(echo ${{ steps.get_file_changes.outputs.files_added }} |
+        $(echo ${{ steps.get_file_changes.outputs.added_files }} |
         tr -s ' ' '\n' |
         grep -E '^models.*[.]sql$' |
         tr -s '\n' ' ')
         )" >> $GITHUB_OUTPUT
 
-
-    # - name: Run Looker Tile Queries Check
-    #   run: python get_looker_tile_queries.py
+    - name: Run Looker Tile Queries Check
+      run: python get_looker_tile_queries.py
