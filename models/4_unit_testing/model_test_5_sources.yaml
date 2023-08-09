@@ -14,4 +14,3 @@ sources:
             description: The description of the item
           - name: active_status
             description: The description of the item
-

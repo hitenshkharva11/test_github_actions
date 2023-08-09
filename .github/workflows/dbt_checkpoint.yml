@@ -76,7 +76,7 @@ jobs:
           echo \
           $(echo ${{ steps.get_file_changes.outputs.modified_files }} |
           tr -s ' ' '\n' |
-          grep -E '.*\.yaml$' |
+          grep -E '.*sources.*\.yaml$' |
           tr -s '\n' ' ') \
           $(echo ${{ steps.get_file_changes.outputs.added_files }} |
           tr -s ' ' '\n' |

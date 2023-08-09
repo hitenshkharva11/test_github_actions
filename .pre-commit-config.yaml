@@ -28,3 +28,4 @@ repos:
       name: Check that date end with timestamp
       files: ^models/4_unit_testing
       args: [--pattern, ".*_timestamp$", --dtype, timestamp_tz]  
+      
