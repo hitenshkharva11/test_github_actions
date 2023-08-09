@@ -12,7 +12,8 @@ repos:
 
     - id: check-source-has-freshness
       name: Check that source freshness is defined
-      args: ["--freshness", "warn_after", "error_after"]
+      args: ["--freshness", "warn_after", "error_after", '--']
+      files: ^models/(1_staging|2_intermediate|3_marts|4_unit_testing).*sources.*\.yaml$
               
     - id: check-column-name-contract
       name: Check that booleans begin with is|has|do
