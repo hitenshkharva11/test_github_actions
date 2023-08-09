@@ -6,4 +6,3 @@ SELECT
     active_status,
     issue_test
 FROM {{ ref('test_checkpoint1') }};
-
