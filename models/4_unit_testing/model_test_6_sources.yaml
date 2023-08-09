@@ -1,0 +1,25 @@
+version: 2
+sources:
+  - name: test_checkpoint_6
+    description:  test checkpoint 6 
+    freshness: # default freshness
+      warn_after: {count: 7, period: day}
+      error_after: {count: 30, period: day}
+    loaded_at_field: _fivetran_synced
+
+    tables:
+      - name: model_test_6
+        description: The source table
+        columns:
+          - name: id
+            description: The unique identifier
+          - name: name
+            description: The name of the item
+          - name: description
+            description: The description of the item
+          - name: active_status
+            description: The description of the item
+          - name: issue_test
+            description: issue date
+            
+            
