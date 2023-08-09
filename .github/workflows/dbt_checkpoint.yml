@@ -70,13 +70,13 @@ jobs:
         id: get_sources_files
         shell: bash -l {0}
         run: |
-          sources=$(
+          echo "sources=$(
           # Combine modified and added files, then filter using grep
-          echo "${{ steps.get_file_changes.outputs.files_modified }} ${{ steps.get_file_changes.outputs.files_added }}" |
+          echo "${{ steps.get_file_changes.outputs.modified_files }} ${{ steps.get_file_changes.outputs.added_files }}" |
           tr -s ' ' '\n' |
-          grep -E '^models.*sources.*\.yaml$' |
+          grep -E '.*sources.*' |
           tr -s '\n' ' '
-          ) >> $GITHUB_OUTPUT
+          )" >> $GITHUB_OUTPUT
 
       - name: Force pass because no files edited.
         if: steps.get_files_to_lint.outputs.lintees == ''
