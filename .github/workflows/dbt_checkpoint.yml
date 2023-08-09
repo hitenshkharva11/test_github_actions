@@ -80,7 +80,7 @@ jobs:
           tr -s '\n' ' ') \
           $(echo ${{ steps.get_file_changes.outputs.added_files }} |
           tr -s ' ' '\n' |
-          grep -E '.*sources\.yaml$' |
+          grep -E '.*sources.*\.yaml$' |
           tr -s '\n' ' ')
           )" >> $GITHUB_OUTPUT
 
