@@ -71,11 +71,17 @@ jobs:
         shell: bash -l {0}
         run: |
           echo "sources=$(
-          # Combine modified and added files, then filter using grep
-          echo "${{ steps.get_file_changes.outputs.modified_files }} ${{ steps.get_file_changes.outputs.added_files }}" |
+          # Issue where grep regular expressions don't work as expected on the
+          # Github Actions shell, check dbt/models/ folder
+          echo \
+          $(echo ${{ steps.get_file_changes.outputs.modified_files }} |
           tr -s ' ' '\n' |
-          grep -E '.*sources.*' |
-          tr -s '\n' ' '
+          grep -E '.*\.yaml$' |
+          tr -s '\n' ' ') \
+          $(echo ${{ steps.get_file_changes.outputs.added_files }} |
+          tr -s ' ' '\n' |
+          grep -E '.*sources\.yaml$' |
+          tr -s '\n' ' ')
           )" >> $GITHUB_OUTPUT
 
       - name: Force pass because no files edited.
