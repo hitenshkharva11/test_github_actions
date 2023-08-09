@@ -2,6 +2,7 @@ repos:
 - repo: https://github.com/dbt-checkpoint/dbt-checkpoint
   rev: v1.1.1
   hooks:
+          
     - id: check-script-semicolon
     - id: check-script-has-no-table-name
 
@@ -11,18 +12,18 @@ repos:
 
     - id: check-source-has-freshness
       name: Check that source freshness is defined
-      args: ["--freshness", "error_after", "warn_after", "--"]
+      args: ["--freshness", "warn_after", "error_after"]
               
     - id: check-column-name-contract
       name: Check that booleans begin with is|has|do
-      args: [--pattern, "(is|has|do)_.*", --dtype, boolean, "--"]   
+      args: [--pattern, "(is|has|do)_.*", --dtype, BOOL, "--catalog", "test_github_actions/target/catalog.json", "--manifest", "test_github_actions/target/manifest.json"]   
 
     - id: check-column-name-contract
       name: Check that date end with date
       files: ^models/(1_staging|2_intermediate|3_marts|4_unit_testing)
-      args: [--pattern, ".*_date$", --dtype, date, "--"]
+      args: [--pattern, ".*_date$", --dtype, date, "--catalog", "target/catalog.json", "--manifest", "target/manifest.json"]
 
     - id: check-column-name-contract
       name: Check that date end with timestamp
       files: ^models/4_unit_testing
-      args: [--pattern, ".*_timestamp$", --dtype, timestamp_tz, "--"]  
+      args: [--pattern, ".*_timestamp$", --dtype, timestamp_tz]  

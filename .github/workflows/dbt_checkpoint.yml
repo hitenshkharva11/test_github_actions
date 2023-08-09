@@ -44,7 +44,7 @@ jobs:
         uses: tj-actions/changed-files@v37
         with:
           separator: ' '
-          
+
     # Transforming the output of get_file_changes to a string we can use for our next step
     # We want to take in account both new files and files that have been modified
       - name: Get new and changed .sql files in /models to lint
@@ -56,15 +56,27 @@ jobs:
           # Issue where grep regular expressions don't work as expected on the
           # Github Actions shell, check dbt/models/ folder
           echo \
-          $(echo ${{ steps.get_file_changes.outputs.files_modified }} |
+          $(echo ${{ steps.get_file_changes.outputs.modified_files }} |
           tr -s ' ' '\n' |
           grep -E '^models.*' |
           tr -s '\n' ' ') \
-          $(echo ${{ steps.get_file_changes.outputs.files_added }} |
+          $(echo ${{ steps.get_file_changes.outputs.added_files }} |
           tr -s ' ' '\n' |
           grep -E '^models.*' |
           tr -s '\n' ' ')
           )" >> $GITHUB_OUTPUT
+      
+      - name: Get changed sources files
+        id: get_sources_files
+        shell: bash -l {0}
+        run: |
+          sources=$(
+          # Combine modified and added files, then filter using grep
+          echo "${{ steps.get_file_changes.outputs.files_modified }} ${{ steps.get_file_changes.outputs.files_added }}" |
+          tr -s ' ' '\n' |
+          grep -E '^models.*sources.*\.yaml$' |
+          tr -s '\n' ' '
+          ) >> $GITHUB_OUTPUT
 
       - name: Force pass because no files edited.
         if: steps.get_files_to_lint.outputs.lintees == ''
